@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pay4/models/pay4user.dart';
+import 'package:pay4/services/database.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,9 +39,10 @@ class AuthService {
   // sign in
   Future register(String email, String password) async {
     try {
-      UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+      UserCredential credentials = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return _createUser(authResult.user);
+      await DatabaseService(uid: credentials.user.uid).updateUserData(0, 100.0);
+      return _createUser(credentials.user);
     } catch (e) {
       print(e.toString());
       return null;
